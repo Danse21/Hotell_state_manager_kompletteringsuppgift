@@ -4,5 +4,5 @@ enum RoomStatus
 {
     Available,
     Occupied,
-    Busy,
+    InService,
 }
