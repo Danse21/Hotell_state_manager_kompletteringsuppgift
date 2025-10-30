@@ -20,6 +20,10 @@ class Room
         Status = RoomStatus.Available;
     }
 
+    public void Available()
+    {
+        Status = RoomStatus.Available;
+    }
     public void Occupy()
     {
         Status = RoomStatus.Occupied;

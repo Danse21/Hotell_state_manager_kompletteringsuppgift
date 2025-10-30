@@ -27,7 +27,7 @@ for (int floorNum = 0; floorNum < 3; floorNum++)
     }
 }
 // Load previously saved data
-// LoadSavedRooms(hotelRooms, filePath);
+LoadSavedRooms(hotelRooms, filePath);
 
 
 User? active_user = null;
@@ -90,7 +90,7 @@ while (running)
                 Console.Clear();
                 Console.WriteLine("=====Welcome to the Rooms Tracking System=====");
                 Console.WriteLine("\nChoose what you want to do: ");
-                Console.WriteLine("[V]. View Current Rooms Outlook");
+                Console.WriteLine("[V]. View All Rooms Outlook");
                 Console.WriteLine("[O]. View List of Occcupied Rooms");
                 Console.WriteLine("[A]. View List of Availble Rooms");
                 Console.WriteLine("[B]. Book an Available Room");
@@ -103,41 +103,44 @@ while (running)
                 {
                     case "V":
                         {
-                            ViewCurrentRoomsOutlook(hotelRooms);
+                            ViewAllRoomsOutlook(hotelRooms);
                             Console.WriteLine("\nPress ENETER to continue...");
                             Console.ReadLine();
                             break;
                         }
                     case "O":
                         {
-                            ViewOccupiedRooms(hotelRooms, RoomStatus.Occupied);
+                            ViewRoomsStatus(hotelRooms, RoomStatus.Occupied);
                             break;
                         }
                     case "A":
                         {
-
+                            ViewRoomsStatus(hotelRooms, RoomStatus.Available);
+                            break;
                         }
-                        break;
                     case "B":
                         {
-
+                            BookARoom(hotelRooms);
+                            SaveRoomsToFile(hotelRooms, filePath);
+                            break;
                         }
-                        break;
                     case "C":
                         {
-
+                            CheckoutARoom(hotelRooms);
+                            SaveRoomsToFile(hotelRooms, filePath);
+                            break;
                         }
-                        break;
                     case "M":
                         {
-
+                            MarkRoomUnderMaintenance(hotelRooms);
+                            SaveRoomsToFile(hotelRooms, filePath);
+                            break;
                         }
-                        break;
                     case "E":
                         {
-
+                            EventLog.ShowEventLog();
+                            break;
                         }
-                        break;
                     case "Q":
                         {
                             running = false;
@@ -162,7 +165,7 @@ while (running)
             break;
     }
 }
-static void ViewCurrentRoomsOutlook(Room[,] hotelRooms)
+static void ViewAllRoomsOutlook(Room[,] hotelRooms)
 {
     Console.Clear();
     Console.WriteLine("===== Current Hotel Rooms Outlook =====");
@@ -185,7 +188,7 @@ static void ViewCurrentRoomsOutlook(Room[,] hotelRooms)
     Console.WriteLine("___________________________________________________");
 }
 
-static void ViewOccupiedRooms(Room[,] hotelRooms, RoomStatus status)
+static void ViewRoomsStatus(Room[,] hotelRooms, RoomStatus status)
 {
     Console.Clear();
     Console.WriteLine($"===== List of {status} Rooms====");
@@ -207,4 +210,111 @@ static void ViewOccupiedRooms(Room[,] hotelRooms, RoomStatus status)
     }
     Console.WriteLine("\nPress ENETER to continue...");
     Console.ReadLine();
+}
+
+static void BookARoom(Room[,] hotelRooms)
+{
+    Console.WriteLine("===== Book a Room =====");
+    ViewRoomsStatus(hotelRooms, RoomStatus.Available);
+
+    Console.Write("\nEnter floor number (1 - 3): ");
+    int.TryParse(Console.ReadLine(), out int floor);
+    Console.Write("\nEnter room number (1 - 6): ");
+    int.TryParse(Console.ReadLine(), out int room);
+
+    Room userSelected = hotelRooms[floor - 1, room - 1];
+    if (userSelected.Status == RoomStatus.Available)
+    {
+        userSelected.Occupy();
+        EventLog.AddEvent(EventType.BookRoom, floor, room);
+        Console.WriteLine($"Room {room} on floor {floor} booking confirmed!");
+    }
+    else
+    {
+        Console.WriteLine("Selected room not available.");
+    }
+    Console.WriteLine("\nPress ENETER to continue...");
+    Console.ReadLine();
+}
+
+static void CheckoutARoom(Room[,] hotelRooms)
+{
+    Console.Clear();
+    Console.WriteLine("===== Checkout an Occupied Room =====");
+
+    ViewRoomsStatus(hotelRooms, RoomStatus.Occupied);
+
+    Console.Write("\nEnter floor number (1 - 3): ");
+    int.TryParse(Console.ReadLine(), out int floor);
+    Console.Write("\nEnter room number (1 - 6): ");
+    int.TryParse(Console.ReadLine(), out int room);
+
+    Room userSelected = hotelRooms[floor - 1, room - 1];
+    if (userSelected.Status == RoomStatus.Occupied)
+    {
+        userSelected.Available();
+        EventLog.AddEvent(EventType.CheckoutRoom, floor, room);
+        Console.WriteLine($"Room {room} on floor {floor} checkout confirmed!");
+    }
+    else
+    {
+        Console.WriteLine("Selected room not occupied.");
+    }
+    Console.WriteLine("\nPress ENETER to continue...");
+    Console.ReadLine();
+}
+
+static void MarkRoomUnderMaintenance(Room[,] hotelRooms)
+{
+    Console.Clear();
+    Console.WriteLine("===== Mark Room as Under Maintenance =====");
+
+    ViewAllRoomsOutlook(hotelRooms);
+
+    Console.Write("\nEnter floor number (1 - 3): ");
+    int.TryParse(Console.ReadLine(), out int floor);
+    Console.Write("\nEnter room number (1 - 6): ");
+    int.TryParse(Console.ReadLine(), out int room);
+
+    Room userSelected = hotelRooms[floor - 1, room - 1];
+    userSelected.RoomUnderMaintenance();
+    EventLog.AddEvent(EventType.MarkRoomUnderMaintenance, floor, room);
+    Console.WriteLine($"Room {room} on floor {floor} marked as under maintenance!");
+
+    Console.WriteLine("\nPress ENETER to continue...");
+    Console.ReadLine();
+}
+
+static void SaveRoomsToFile(Room[,] hotelRooms, string path)
+{
+    List<string> saved_rooms = new();
+    for (int floorNum = 0; floorNum < hotelRooms.GetLength(0); floorNum++)
+    {
+        for (int roomNum = 0; roomNum < hotelRooms.GetLength(1); roomNum++)
+        {
+            saved_rooms.Add($"{hotelRooms[floorNum, roomNum].FloorNumber}, {hotelRooms[floorNum, roomNum].RoomNumber}, {hotelRooms[floorNum, roomNum].Status}");
+        }
+    }
+    File.WriteAllLines("roomsInfo.save", saved_rooms);
+}
+
+static void LoadSavedRooms(Room[,] hotelRooms, string path)
+{
+    bool saved_rooms_found = File.Exists("roomsInfo.save");
+    if (!saved_rooms_found)
+    {
+        return;
+    }
+    else
+    {
+        string[] saved_rooms = File.ReadAllLines("roomsInfo.save");
+        foreach (string saved_room in saved_rooms)
+        {
+            string[] parts = saved_room.Split(',');
+            int.TryParse(parts[0], out int floor);
+            int.TryParse(parts[1], out int room);
+            Enum.TryParse<RoomStatus>(parts[2], out RoomStatus status);
+            hotelRooms[floor - 1, room - 1].Status = status;
+        }
+    }
 }
