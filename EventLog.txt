@@ -3,3 +3,4 @@ BookRoom: Floor 2 Room 2: Guest: John: 2025-10-31 07:49:58
 BookRoom: Floor 1 Room 6: Guest: Max: 2025-10-31 07:50:52
 CheckoutRoom: Floor 1 Room 6: 2025-10-31 07:51:10
 MarkRoomUnderMaintenance: Floor 1 Room 6: 2025-10-31 07:51:37
+CheckoutRoom: Floor 2 Room 2: 2025-10-31 16:35:59

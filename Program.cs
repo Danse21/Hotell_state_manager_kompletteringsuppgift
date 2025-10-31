@@ -5,20 +5,20 @@ using App;
 
 
 
-List<User> users = new();  // List of users
-users.Add(new User("hotell", "pass"));
+List<User> users = new();       // Create new list of users
+users.Add(new User("hotell", "pass"));      // Add pre-made user login information to the user list.
 
-// save the user to a file (loginInfo.save)
-string[] save_users_to_file = new string[users.Count];
+string[] save_users_to_file = new string[users.Count];      // Initialize an array for user's login info saving.
 for (int i = 0; i < users.Count; ++i)
 {
-    save_users_to_file[i] = users[i].ToSaveString();
+    save_users_to_file[i] = users[i].ToSaveString();        // Converts each user to file format.
 }
-File.WriteAllLines("loginInfo.save", save_users_to_file);
+File.WriteAllLines("loginInfo.save", save_users_to_file);   // save the user login info. to a file (loginInfo.save)
 
-string filePath = "roomsInfo.save";
-Room[,] hotelRooms = new Room[3, 6]; // 2D array for rooms
-                                     // Initialize rooms
+// Hotel room initialization
+string filePath = "roomsInfo.save";     // File where hotel rooms identification info will be saved.
+Room[,] hotelRooms = new Room[3, 6];        // Initialize 2D array for 3 floors, 6 rooms each.
+                                     
 for (int floorNum = 0; floorNum < 3; floorNum++)
 {
     for (int roomNum = 0; roomNum < 6; roomNum++)
@@ -26,8 +26,8 @@ for (int floorNum = 0; floorNum < 3; floorNum++)
         hotelRooms[floorNum, roomNum] = new Room(floorNum + 1, roomNum + 1);
     }
 }
-// Load previously saved data
-LoadSavedRooms(hotelRooms, filePath);
+
+LoadSavedRooms(hotelRooms, filePath);       // Load previously saved data
 
 
 User? active_user = null;
@@ -85,7 +85,8 @@ while (running)
             }
             break;
 
-        case Menu.Main:
+        case Menu.Main:        // Displays all room actions logged in user can perform, 
+                                // takes in user input and executes user choice.
             {
                 Console.Clear();
                 Console.WriteLine("=====Welcome to the Rooms Tracking System=====");
@@ -103,6 +104,7 @@ while (running)
                 {
                     case "V":
                         {
+                            // Lists all the floor and rooms in the hotel.
                             ViewAllRoomsOutlook(hotelRooms);
                             Console.WriteLine("\nPress ENETER to continue...");
                             Console.ReadLine();
@@ -110,45 +112,52 @@ while (running)
                         }
                     case "O":
                         {
+                            // Lists all the rooms currently occupied by guest.
                             ViewRoomsStatus(hotelRooms, RoomStatus.Occupied);
                             break;
                         }
                     case "A":
                         {
+                            // Lists all the rooms that are free.
                             ViewRoomsStatus(hotelRooms, RoomStatus.Available);
                             break;
                         }
                     case "B":
                         {
+                            // Book a free room to a guest and save the activity information to a file.
                             BookARoom(hotelRooms);
                             SaveRoomsToFile(hotelRooms, filePath);
                             break;
                         }
                     case "C":
                         {
+                            // Checkout a guest out of a room and save the activity info to a file.
                             CheckoutARoom(hotelRooms);
                             SaveRoomsToFile(hotelRooms, filePath);
                             break;
                         }
                     case "M":
                         {
+                            // Indicates that a room is temporarily not available and save the activity info to a file.
                             MarkRoomUnderMaintenance(hotelRooms);
                             SaveRoomsToFile(hotelRooms, filePath);
                             break;
                         }
                     case "E":
                         {
+                            // Displays event log of all the room actions. 
                             EventLog.ShowEventLog();
                             break;
                         }
                     case "Q":
                         {
+                            // Exit the program.
                             running = false;
                             Console.WriteLine("You have quitted successfully!");
                         }
                         break;
                     default:
-                        {
+                        {   // Error message displayed when user make wrong choice.
                             Console.WriteLine("Invalid option!");
                             menu = Menu.Main;
                         }
