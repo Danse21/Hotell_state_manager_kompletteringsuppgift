@@ -9,6 +9,7 @@ enum RoomStatus
 
 class Room
 {
+    public string GuestName;
     public int FloorNumber;
     public int RoomNumber;
     public RoomStatus Status;
@@ -24,8 +25,9 @@ class Room
     {
         Status = RoomStatus.Available;
     }
-    public void Occupy()
+    public void Occupy(string guestName)
     {
+        GuestName = guestName;
         Status = RoomStatus.Occupied;
     }
 

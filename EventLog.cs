@@ -16,6 +16,12 @@ class EventLog
     }
 
     public static string eventLogFilePath = "EventLog.txt";
+
+    public static void AddEvent(EventType action, int floorNum, int roomNum, string guestName)
+    {
+        string logEvent = $"{action}: Floor {floorNum} Room {roomNum}: Guest: {guestName}: {DateTime.Now}";
+        File.AppendAllText(eventLogFilePath, logEvent + "\n");
+    }
     
     public static void AddEvent(EventType action, int floorNum, int roomNum)
     {

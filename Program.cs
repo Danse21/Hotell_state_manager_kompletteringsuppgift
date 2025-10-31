@@ -222,12 +222,19 @@ static void BookARoom(Room[,] hotelRooms)
     Console.Write("\nEnter room number (1 - 6): ");
     int.TryParse(Console.ReadLine(), out int room);
 
-    Room userSelected = hotelRooms[floor - 1, room - 1];
-    if (userSelected.Status == RoomStatus.Available)
+    Room selected_room = hotelRooms[floor - 1, room - 1];
+    if (selected_room.Status == RoomStatus.Available)
     {
-        userSelected.Occupy();
-        EventLog.AddEvent(EventType.BookRoom, floor, room);
-        Console.WriteLine($"Room {room} on floor {floor} booking confirmed!");
+         Console.Write("\nEnter your first name: ");
+        string? guest_name = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(guest_name))
+        {
+            Console.WriteLine("Guest name needed. Booking denied.");
+            return;
+        }
+        selected_room.Occupy(guest_name);
+        EventLog.AddEvent(EventType.BookRoom, floor, room, guest_name);
+        Console.WriteLine($"{guest_name}, Room {room} on floor {floor} booking is confirmed!");
     }
     else
     {
@@ -249,10 +256,10 @@ static void CheckoutARoom(Room[,] hotelRooms)
     Console.Write("\nEnter room number (1 - 6): ");
     int.TryParse(Console.ReadLine(), out int room);
 
-    Room userSelected = hotelRooms[floor - 1, room - 1];
-    if (userSelected.Status == RoomStatus.Occupied)
+    Room selected_room = hotelRooms[floor - 1, room - 1];
+    if (selected_room.Status == RoomStatus.Occupied)
     {
-        userSelected.Available();
+        selected_room.Available();
         EventLog.AddEvent(EventType.CheckoutRoom, floor, room);
         Console.WriteLine($"Room {room} on floor {floor} checkout confirmed!");
     }
@@ -292,7 +299,7 @@ static void SaveRoomsToFile(Room[,] hotelRooms, string path)
     {
         for (int roomNum = 0; roomNum < hotelRooms.GetLength(1); roomNum++)
         {
-            saved_rooms.Add($"{hotelRooms[floorNum, roomNum].FloorNumber}, {hotelRooms[floorNum, roomNum].RoomNumber}, {hotelRooms[floorNum, roomNum].Status}");
+            saved_rooms.Add($"{hotelRooms[floorNum, roomNum].FloorNumber}, {hotelRooms[floorNum, roomNum].RoomNumber}, {hotelRooms[floorNum, roomNum].Status}, {hotelRooms[floorNum, roomNum].GuestName}");
         }
     }
     File.WriteAllLines("roomsInfo.save", saved_rooms);
@@ -315,6 +322,8 @@ static void LoadSavedRooms(Room[,] hotelRooms, string path)
             int.TryParse(parts[1], out int room);
             Enum.TryParse<RoomStatus>(parts[2], out RoomStatus status);
             hotelRooms[floor - 1, room - 1].Status = status;
+            string guestName = parts[3];
+            hotelRooms[floor - 1, room - 1].GuestName = guestName;
         }
     }
 }
