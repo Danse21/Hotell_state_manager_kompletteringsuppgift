@@ -21,9 +21,11 @@ This console application is developed to help hotel receptionist to keep track o
    - NB: All case-sensitive
 
 3. After successful login, you will be presented with main menu options:
+   ![alt text](<Screenshot 2025-11-03 at 04.27.55.png>)
     - Enter an alphabet that corresponds to what you want to do (case-sensitive)
     - Press ENTER key to continue.
     - For example; Enter ``` V ``` to view all the guest rooms in the hotel.
+   ![alt text](<Screenshot 2025-11-03 at 04.39.53.png>)
 
 4. To book a room for a guest
    - Enter ```B``` to go to booking function,
